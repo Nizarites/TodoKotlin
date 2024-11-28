@@ -4,11 +4,8 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import androidx.fragment.app.Fragment
-import androidx.recyclerview.widget.RecyclerView
-import com.google.android.material.floatingactionbutton.FloatingActionButton
-import com.sami.todo.R
+import com.sami.todo.databinding.FragmentTaskListBinding
 import java.util.UUID
 
 class TaskListFragment : Fragment() {
@@ -18,21 +15,24 @@ class TaskListFragment : Fragment() {
         Task(id = "id_3", title = "Task 3")
     )
     private val adapter = TaskListAdapter()
+    private var _binding: FragmentTaskListBinding? = null
+    private val binding get() = _binding!!
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_task_list, container,false)
+        _binding = FragmentTaskListBinding.inflate(inflater, container, false)
+        val rootView = binding.root
+        // val rootView = inflater.inflate(R.layout.fragment_task_list, container,false)
         adapter.submitList(taskList)
         return rootView
     }
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         // on utilise `requireView()` pour éviter les erreurs de `null`
-        val recyclerView = requireView().findViewById<RecyclerView>(R.id.task_list)
+        val recyclerView = binding.taskList
         recyclerView.adapter = adapter
-
-        val addButton = requireView().findViewById<FloatingActionButton>(R.id.add_task_button)
+        val addButton = binding.addTaskButton
         addButton.setOnClickListener {
             val newTask =
                 Task(id = UUID.randomUUID().toString(), title = "Task ${taskList.size + 1}")
@@ -40,6 +40,10 @@ class TaskListFragment : Fragment() {
             adapter.submitList(taskList)
 
         }
+    }
+    override fun onDestroyView() {
+        super.onDestroyView()
+        _binding = null
     }
 
 }

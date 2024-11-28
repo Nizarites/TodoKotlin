@@ -1,37 +1,32 @@
 package com.sami.todo.list
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.ListAdapter
-import android.widget.TextView
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
-import com.sami.todo.R
+import com.sami.todo.databinding.ItemTaskBinding
 
 class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDiffCallback()) {
 
-    // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
-    inner class TaskViewHolder(itemView: View) : RecyclerView.ViewHolder(itemView) {
+    private var _binding: ItemTaskBinding? = null
+    private val binding get() = _binding!!
 
-        private val textViewTitle = itemView.findViewById<TextView>(R.id.task_title)
-        private val textViewDescription = itemView.findViewById<TextView>(R.id.task_description)
+    // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
+    inner class TaskViewHolder(private val binding: ItemTaskBinding) : RecyclerView.ViewHolder(binding.root) {
 
         fun bind(task: Task) {
             // on affichera les données ici
-            textViewTitle.text = task.title
-            textViewDescription.text =  task.description
+            binding.taskTitle.text = task.title
+            binding.taskDescription.text =  task.description
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
         // on crée la vue ici
-        val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
-        return TaskViewHolder(itemView)
-    }
-
-    override fun getItemCount(): Int {
-        return currentList.size
+        _binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
+        //val itemView = LayoutInflater.from(parent.context).inflate(R.layout.item_task, parent, false)
+        return TaskViewHolder(binding)
     }
 
     override fun onBindViewHolder(holder: TaskViewHolder, position: Int) {
