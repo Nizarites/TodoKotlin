@@ -9,12 +9,14 @@ import com.sami.todo.R
 
 class TaskListFragment : Fragment() {
     private var taskList = listOf("Task 1", "Task 2", "Task 3")
+    private val adapter = TaskListAdapter()
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        val rootView = inflater.inflate(R.layout.fragment_task_list, container, false)
+        val rootView = inflater.inflate(R.layout.fragment_task_list, container,false)
+        adapter.currentList = taskList
         return rootView
     }
 }
