@@ -1,5 +1,6 @@
 package com.sami.todo.list
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -9,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import com.sami.todo.databinding.FragmentTaskListBinding
 import com.sami.todo.detail.DetailActivity
+import java.util.UUID
 
 class TaskListFragment : Fragment() {
     private var taskList = listOf(
@@ -19,19 +21,18 @@ class TaskListFragment : Fragment() {
     private val adapter = TaskListAdapter()
     private var _binding: FragmentTaskListBinding? = null
     private val binding get() = _binding!!
-
+    companion object {
+        const val TASK_KEY = "task"
+    }
     // dans cette callback on recupera la task et on l'ajoutera à la liste
     val createTask =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
-//        if (result.resultCode == Activity.RESULT_OK) {
-//            val data: Intent? = result.data
-//            val task = data?.getParcelableExtra<Task>("task")
-//            task?.let {
-//                taskList = taskList + it
-//                adapter.submitList(taskList)
-//            }
+            if (result.resultCode == Activity.RESULT_OK) {
+                val task = result.data?.getSerializableExtra(TASK_KEY) as Task?
+                taskList = taskList + task!!
+                adapter.submitList(taskList)
+            }
         }
-
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -51,9 +52,7 @@ class TaskListFragment : Fragment() {
         val addButton = binding.addTaskButton
         addButton.setOnClickListener {
             /*val newTask =
-                Task(id = UUID.randomUUID().toString(), title = "Task ${taskList.size + 1}")
-            taskList = taskList + newTask
-            adapter.submitList(taskList)*/
+                */
             val intent = Intent(context, DetailActivity::class.java)
             createTask.launch(intent)
         }
