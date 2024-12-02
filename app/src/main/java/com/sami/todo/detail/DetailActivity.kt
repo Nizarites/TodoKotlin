@@ -10,14 +10,21 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sami.todo.detail.ui.theme.TodoSamiTheme
 import com.sami.todo.list.Task
+import com.sami.todo.list.TaskListFragment.Companion.TASK_KEY
 import java.util.UUID
 
 class DetailActivity : ComponentActivity() {
@@ -31,7 +38,7 @@ class DetailActivity : ComponentActivity() {
                     Detail(
                         modifier = Modifier.padding(innerPadding),
                         onValidate = { task ->
-                            intent.putExtra("task", task)
+                            intent.putExtra(TASK_KEY, task)
                             setResult(RESULT_OK, intent)
                             finish()
                         }
@@ -45,6 +52,7 @@ class DetailActivity : ComponentActivity() {
 
 @Composable
 fun Detail(modifier: Modifier = Modifier,onValidate: (Task) -> Unit) {
+    var task by remember { mutableStateOf(Task(id = UUID.randomUUID().toString(), title = "New Task !")) }
 
     Column (modifier = modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -54,20 +62,25 @@ fun Detail(modifier: Modifier = Modifier,onValidate: (Task) -> Unit) {
             style = MaterialTheme.typography.headlineLarge,
             modifier = modifier
         )
-        Text(
-            text = "Title",
-            style = MaterialTheme.typography.headlineLarge,
+
+        OutlinedTextField(
+            value = task.title,
+            onValueChange = {task = task.copy(title = it)},
+            label = { Text("Task title") },
+            textStyle = MaterialTheme.typography.headlineLarge,
             modifier = modifier
         )
-        Text(
-            text = "Description",
-            style = MaterialTheme.typography.headlineLarge,
+
+        OutlinedTextField(
+            value = task.description,
+            onValueChange = {task = task.copy(description = it)},
+            label = { Text("Description") },
+            textStyle = MaterialTheme.typography.headlineLarge,
             modifier = modifier
         )
         Button (
             onClick = {
-                val newTask = Task(id = UUID.randomUUID().toString(), title = "New Task !")
-                onValidate(newTask)
+                onValidate(task)
             },
             modifier = modifier
         ) {
