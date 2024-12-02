@@ -40,6 +40,11 @@ class TaskListFragment : Fragment() {
             adapter.submitList(taskList)
 
         }
+
+        adapter.onClickDelete = { task ->
+            taskList = taskList.filter { it.id != task.id }
+            adapter.submitList(taskList)
+        }
     }
     override fun onDestroyView() {
         super.onDestroyView()
