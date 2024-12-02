@@ -9,6 +9,7 @@ import com.sami.todo.databinding.ItemTaskBinding
 
 class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDiffCallback()) {
     var onClickDelete:(Task) -> Unit = {}
+    var onClickEdit:(Task) -> Unit = {}
 
     private var _binding: ItemTaskBinding? = null
     private val binding get() = _binding!!
@@ -34,6 +35,11 @@ class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDi
         val deleteButton = binding.deleteTaskButton
         deleteButton.setOnClickListener {
             onClickDelete(currentList.get(position))
+        }
+        val editButton = binding.editTaskButton
+        editButton.setOnClickListener {
+
+            onClickEdit(currentList.get(position))
         }
     }
 

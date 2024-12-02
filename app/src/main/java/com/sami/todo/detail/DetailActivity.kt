@@ -19,7 +19,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Outline
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.sami.todo.detail.ui.theme.TodoSamiTheme
@@ -41,7 +40,9 @@ class DetailActivity : ComponentActivity() {
                             intent.putExtra(TASK_KEY, task)
                             setResult(RESULT_OK, intent)
                             finish()
-                        }
+                        },
+                        task = intent.getSerializableExtra(TASK_KEY) as Task?
+
                     )
                 }
             }
@@ -51,8 +52,8 @@ class DetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun Detail(modifier: Modifier = Modifier,onValidate: (Task) -> Unit) {
-    var task by remember { mutableStateOf(Task(id = UUID.randomUUID().toString(), title = "New Task !")) }
+fun Detail(modifier: Modifier = Modifier,onValidate: (Task) -> Unit, task: Task? = null) {
+    var newTask by remember { mutableStateOf(task?: Task(id = UUID.randomUUID().toString(), title = "New Task !")) }
 
     Column (modifier = modifier.padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
@@ -64,23 +65,23 @@ fun Detail(modifier: Modifier = Modifier,onValidate: (Task) -> Unit) {
         )
 
         OutlinedTextField(
-            value = task.title,
-            onValueChange = {task = task.copy(title = it)},
+            value = newTask.title,
+            onValueChange = {newTask = newTask.copy(title = it)},
             label = { Text("Task title") },
             textStyle = MaterialTheme.typography.headlineLarge,
             modifier = modifier
         )
 
         OutlinedTextField(
-            value = task.description,
-            onValueChange = {task = task.copy(description = it)},
+            value = newTask.description,
+            onValueChange = {newTask = newTask.copy(description = it)},
             label = { Text("Description") },
             textStyle = MaterialTheme.typography.headlineLarge,
             modifier = modifier
         )
         Button (
             onClick = {
-                onValidate(task)
+                onValidate(newTask)
             },
             modifier = modifier
         ) {
@@ -93,6 +94,5 @@ fun Detail(modifier: Modifier = Modifier,onValidate: (Task) -> Unit) {
 @Composable
 fun DetailPreview() {
     TodoSamiTheme {
-        Detail() { }
     }
 }

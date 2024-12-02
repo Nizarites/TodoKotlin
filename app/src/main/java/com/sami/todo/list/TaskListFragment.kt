@@ -33,6 +33,20 @@ class TaskListFragment : Fragment() {
                 adapter.submitList(taskList)
             }
         }
+    val editTask =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val task = result.data?.getSerializableExtra(TASK_KEY) as Task?
+                taskList = taskList.map {
+                    if (it.id == task?.id) {
+                        task
+                    } else { // sinon on garde l'ancienne valeur
+                        it
+                    }
+                }
+                adapter.submitList(taskList)
+            }
+        }
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -50,16 +64,20 @@ class TaskListFragment : Fragment() {
         val recyclerView = binding.taskList
         recyclerView.adapter = adapter
         val addButton = binding.addTaskButton
+        val intent = Intent(context, DetailActivity::class.java)
+
         addButton.setOnClickListener {
-            /*val newTask =
-                */
-            val intent = Intent(context, DetailActivity::class.java)
             createTask.launch(intent)
         }
 
         adapter.onClickDelete = { task ->
             taskList = taskList.filter { it.id != task.id }
             adapter.submitList(taskList)
+        }
+
+        adapter.onClickEdit = { task ->
+            intent.putExtra(TASK_KEY, task)
+            editTask.launch(intent)
         }
     }
 

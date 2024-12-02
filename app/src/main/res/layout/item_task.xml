@@ -15,7 +15,12 @@
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1" />
-
+        <ImageButton
+            android:id="@+id/edit_task_button"
+            android:src="@drawable/ic_menu_edit"
+            android:layout_width="wrap_content"
+            android:background="@android:color/holo_blue_bright"
+            android:layout_height="match_parent" />
         <ImageButton
             android:id="@+id/delete_task_button"
             android:src="@drawable/ic_menu_delete"
