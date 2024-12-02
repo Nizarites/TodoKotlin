@@ -18,7 +18,18 @@ class TaskListFragment : Fragment() {
         Task(id = "id_2", title = "Task 2"),
         Task(id = "id_3", title = "Task 3")
     )
-    private val adapter = TaskListAdapter()
+    val adapterListener : TaskListListener = object : TaskListListener {
+
+        override fun onClickDelete(task: Task) {
+            taskList = taskList.filter { it.id != task.id }
+            adapter.submitList(taskList)}
+
+        override fun onClickEdit(task: Task) {
+            val intent = Intent(context, DetailActivity::class.java)
+            intent.putExtra(TASK_KEY, task)
+            editTask.launch(intent)}
+    }
+    val adapter = TaskListAdapter(adapterListener)
     private var _binding: FragmentTaskListBinding? = null
     private val binding get() = _binding!!
     companion object {
@@ -70,15 +81,7 @@ class TaskListFragment : Fragment() {
             createTask.launch(intent)
         }
 
-        adapter.onClickDelete = { task ->
-            taskList = taskList.filter { it.id != task.id }
-            adapter.submitList(taskList)
-        }
 
-        adapter.onClickEdit = { task ->
-            intent.putExtra(TASK_KEY, task)
-            editTask.launch(intent)
-        }
     }
 
     override fun onDestroyView() {
