@@ -7,9 +7,7 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.sami.todo.databinding.ItemTaskBinding
 
-class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDiffCallback()) {
-    var onClickDelete:(Task) -> Unit = {}
-    var onClickEdit:(Task) -> Unit = {}
+class TaskListAdapter(val listener: TaskListListener) : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDiffCallback()) {
 
     private var _binding: ItemTaskBinding? = null
     private val binding get() = _binding!!
@@ -34,12 +32,12 @@ class TaskListAdapter : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDi
         holder.bind(currentList.get(position))
         val deleteButton = binding.deleteTaskButton
         deleteButton.setOnClickListener {
-            onClickDelete(currentList.get(position))
+            listener.onClickDelete(currentList.get(position))
         }
         val editButton = binding.editTaskButton
         editButton.setOnClickListener {
 
-            onClickEdit(currentList.get(position))
+            listener.onClickEdit(currentList.get(position))
         }
     }
 
