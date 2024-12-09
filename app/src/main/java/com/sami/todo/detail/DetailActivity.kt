@@ -1,5 +1,6 @@
 package com.sami.todo.detail
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
@@ -29,6 +30,20 @@ import java.util.UUID
 class DetailActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        val task = when (intent?.action) {
+            Intent.ACTION_SEND -> {
+                // Share case : create new task with shared text as desc
+                val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
+                Task(id = UUID.randomUUID().toString(),
+                    title = "", // Empty title to fill by user
+                    description = sharedText
+                )
+            }
+            else -> {
+                // Normal case : retrieve task from intent
+                intent.getSerializableExtra("task") as? Task
+            }
+        }
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
@@ -41,7 +56,7 @@ class DetailActivity : ComponentActivity() {
                             setResult(RESULT_OK, intent)
                             finish()
                         },
-                        task = intent.getSerializableExtra(TASK_KEY) as Task?
+                        task = task
 
                     )
                 }
