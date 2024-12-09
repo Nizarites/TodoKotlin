@@ -36,7 +36,6 @@ class TaskListAdapter(val listener: TaskListListener) : ListAdapter<Task, TaskLi
         }
         val editButton = binding.editTaskButton
         editButton.setOnClickListener {
-
             listener.onClickEdit(currentList.get(position))
         }
     }

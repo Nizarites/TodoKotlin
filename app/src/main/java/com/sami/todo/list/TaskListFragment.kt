@@ -9,59 +9,51 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import com.sami.todo.data.Api
+import com.sami.todo.data.TaskListViewModel
 import com.sami.todo.databinding.FragmentTaskListBinding
 import com.sami.todo.detail.DetailActivity
 import kotlinx.coroutines.launch
-import java.util.UUID
 
 class TaskListFragment : Fragment() {
-    private var taskList = listOf(
-        Task(id = "id_1", title = "Task 1", description = "description 1"),
-        Task(id = "id_2", title = "Task 2"),
-        Task(id = "id_3", title = "Task 3")
-    )
-    val adapterListener : TaskListListener = object : TaskListListener {
+    val adapterListener: TaskListListener = object : TaskListListener {
 
         override fun onClickDelete(task: Task) {
-            taskList = taskList.filter { it.id != task.id }
-            adapter.submitList(taskList)}
+            viewModel.remove(task)
+        }
 
         override fun onClickEdit(task: Task) {
             val intent = Intent(context, DetailActivity::class.java)
             intent.putExtra(TASK_KEY, task)
-            editTask.launch(intent)}
+            editTask.launch(intent)
+        }
     }
     val adapter = TaskListAdapter(adapterListener)
     private var _binding: FragmentTaskListBinding? = null
     private val binding get() = _binding!!
+
     companion object {
         const val TASK_KEY = "task"
     }
+
+    private val viewModel: TaskListViewModel by viewModels()
+
     // dans cette callback on recupera la task et on l'ajoutera à la liste
     val createTask =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val task = result.data?.getSerializableExtra(TASK_KEY) as Task?
-                taskList = taskList + task!!
-                adapter.submitList(taskList)
+                viewModel.add(result.data?.getSerializableExtra(TASK_KEY) as Task)
             }
         }
     val editTask =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
-                val task = result.data?.getSerializableExtra(TASK_KEY) as Task?
-                taskList = taskList.map {
-                    if (it.id == task?.id) {
-                        task
-                    } else { // sinon on garde l'ancienne valeur
-                        it
-                    }
-                }
-                adapter.submitList(taskList)
+                viewModel.edit(result.data?.getSerializableExtra(TASK_KEY) as Task)
             }
         }
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
@@ -70,7 +62,7 @@ class TaskListFragment : Fragment() {
         _binding = FragmentTaskListBinding.inflate(inflater, container, false)
         val rootView = binding.root
         // val rootView = inflater.inflate(R.layout.fragment_task_list, container,false)
-        adapter.submitList(taskList)
+        viewModel.refresh()
         return rootView
     }
 
@@ -85,6 +77,14 @@ class TaskListFragment : Fragment() {
             createTask.launch(intent)
         }
 
+        lifecycleScope.launch { // on lance une coroutine car `collect` est `suspend`
+            viewModel.tasksStateFlow.collect { newList ->
+                // cette lambda est exécutée à chaque fois que la liste est mise à jour dans le VM
+                // -> ici, on met à jour la liste dans l'adapter
+                adapter.submitList(newList)
+            }
+        }
+
 
     }
 
@@ -95,6 +95,7 @@ class TaskListFragment : Fragment() {
 
     override fun onResume() {
         super.onResume()
+        viewModel.refresh()
         // Ici on ne va pas gérer les cas d'erreur donc on force le crash avec "!!"
         lifecycleScope.launch {
             val user = Api.userWebService.fetchUser().body()!!
