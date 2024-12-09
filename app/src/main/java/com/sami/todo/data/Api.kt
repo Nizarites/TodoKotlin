@@ -9,6 +9,9 @@ import retrofit2.Retrofit
 
 object Api {
     private const val TOKEN = "c63ea4bd05179aafff65b5a5146f551940738f92"
+    val userWebService : UserWebService by lazy {
+        retrofit.create(UserWebService::class.java)
+    }
 
     private val retrofit by lazy {
         // client HTTP
