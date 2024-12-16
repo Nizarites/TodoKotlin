@@ -11,10 +11,12 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import coil3.load
 import com.sami.todo.data.Api
 import com.sami.todo.data.TaskListViewModel
 import com.sami.todo.databinding.FragmentTaskListBinding
 import com.sami.todo.detail.DetailActivity
+import com.sami.todo.user.UserActivity
 import kotlinx.coroutines.launch
 
 class TaskListFragment : Fragment() {
@@ -71,11 +73,18 @@ class TaskListFragment : Fragment() {
         val recyclerView = binding.taskList
         recyclerView.adapter = adapter
         val addButton = binding.addTaskButton
+        val userIcone = binding.userIcone
         val intent = Intent(context, DetailActivity::class.java)
 
         addButton.setOnClickListener {
             createTask.launch(intent)
         }
+
+        userIcone.setOnClickListener{
+            startActivity(Intent(context, UserActivity::class.java))
+        }
+
+
 
         lifecycleScope.launch { // on lance une coroutine car `collect` est `suspend`
             viewModel.tasksStateFlow.collect { newList ->
@@ -101,6 +110,7 @@ class TaskListFragment : Fragment() {
             val user = Api.userWebService.fetchUser().body()!!
             Log.d("User", user.name)
             binding.userTextView.text = user.name
+            binding.userIcone.load(user.avatar)
         }
     }
 
