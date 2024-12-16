@@ -18,7 +18,7 @@ interface TasksWebService {
     @POST("/rest/v2/tasks/{id}")
     suspend fun update(@Body task: Task, @Path("id") id: String = task.id): Response<Task>
 
-// Complétez avec les méthodes précédentes, la doc de l'API, et celle de Retrofit:
+    // Complétez avec les méthodes précédentes, la doc de l'API, et celle de Retrofit:
     @DELETE("/rest/v2/tasks/{id}")
     suspend fun delete(@Path("id") id: String): Response<Unit>
 }

@@ -7,23 +7,25 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.sami.todo.databinding.ItemTaskBinding
 
-class TaskListAdapter(val listener: TaskListListener) : ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDiffCallback()) {
+class TaskListAdapter(val listener: TaskListListener) :
+    ListAdapter<Task, TaskListAdapter.TaskViewHolder>(TaskDiffCallback()) {
 
     private var _binding: ItemTaskBinding? = null
     private val binding get() = _binding!!
 
-    // on utilise `inner` ici afin d'avoir accès aux propriétés de l'adapter directement
-    inner class TaskViewHolder(private val binding: ItemTaskBinding) : RecyclerView.ViewHolder(binding.root) {
+    // we use `inner` here to have direct access to the adapter properties
+    inner class TaskViewHolder(private val binding: ItemTaskBinding) :
+        RecyclerView.ViewHolder(binding.root) {
 
         fun bind(task: Task) {
-            // on affichera les données ici
+            // we will display the data here
             binding.taskTitle.text = task.title
-            binding.taskDescription.text =  task.description
+            binding.taskDescription.text = task.description
         }
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): TaskViewHolder {
-        // on crée la vue ici
+        // we create the view here
         _binding = ItemTaskBinding.inflate(LayoutInflater.from(parent.context), parent, false)
         return TaskViewHolder(binding)
     }
@@ -41,6 +43,7 @@ class TaskListAdapter(val listener: TaskListListener) : ListAdapter<Task, TaskLi
     }
 
 }
+
 class TaskDiffCallback : DiffUtil.ItemCallback<Task>() {
     override fun areItemsTheSame(oldItem: Task, newItem: Task): Boolean {
         return oldItem.id == newItem.id

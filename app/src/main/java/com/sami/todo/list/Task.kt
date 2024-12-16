@@ -10,7 +10,7 @@ data class Task(
     @SerialName("content")
     var title: String,
     @SerialName("description")
-    var description: String="Default"
-    ) : Serializable
+    var description: String = "Default"
+) : Serializable
 
 

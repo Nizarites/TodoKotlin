@@ -34,11 +34,13 @@ class DetailActivity : ComponentActivity() {
             Intent.ACTION_SEND -> {
                 // Share case : create new task with shared text as desc
                 val sharedText = intent.getStringExtra(Intent.EXTRA_TEXT) ?: ""
-                Task(id = UUID.randomUUID().toString(),
+                Task(
+                    id = UUID.randomUUID().toString(),
                     title = "", // Empty title to fill by user
                     description = sharedText
                 )
             }
+
             else -> {
                 // Normal case : retrieve task from intent
                 intent.getSerializableExtra("task") as? Task
@@ -67,11 +69,19 @@ class DetailActivity : ComponentActivity() {
 }
 
 @Composable
-fun Detail(modifier: Modifier = Modifier,onValidate: (Task) -> Unit, task: Task? = null) {
-    var newTask by remember { mutableStateOf(task?: Task(id = UUID.randomUUID().toString(), title = "New Task !")) }
+fun Detail(modifier: Modifier = Modifier, onValidate: (Task) -> Unit, task: Task? = null) {
+    var newTask by remember {
+        mutableStateOf(
+            task ?: Task(
+                id = UUID.randomUUID().toString(),
+                title = "New Task !"
+            )
+        )
+    }
 
-    Column (modifier = modifier.padding(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+    Column(
+        modifier = modifier.padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         Text(
             text = "Task detail",
@@ -81,7 +91,7 @@ fun Detail(modifier: Modifier = Modifier,onValidate: (Task) -> Unit, task: Task?
 
         OutlinedTextField(
             value = newTask.title,
-            onValueChange = {newTask = newTask.copy(title = it)},
+            onValueChange = { newTask = newTask.copy(title = it) },
             label = { Text("Task title") },
             textStyle = MaterialTheme.typography.headlineLarge,
             modifier = modifier
@@ -89,12 +99,12 @@ fun Detail(modifier: Modifier = Modifier,onValidate: (Task) -> Unit, task: Task?
 
         OutlinedTextField(
             value = newTask.description,
-            onValueChange = {newTask = newTask.copy(description = it)},
+            onValueChange = { newTask = newTask.copy(description = it) },
             label = { Text("Description") },
             textStyle = MaterialTheme.typography.headlineLarge,
             modifier = modifier
         )
-        Button (
+        Button(
             onClick = {
                 onValidate(newTask)
             },

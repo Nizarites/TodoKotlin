@@ -41,11 +41,12 @@ class TaskListFragment : Fragment() {
 
     companion object {
         const val TASK_KEY = "task"
+        const val NAME_KEY = "name"
     }
 
     private val viewModel: TaskListViewModel by viewModels()
 
-    // dans cette callback on recupera la task et on l'ajoutera à la liste
+    // This callback retrieve the task and add it to the list
     val createTask =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) { result ->
             if (result.resultCode == Activity.RESULT_OK) {
@@ -66,32 +67,21 @@ class TaskListFragment : Fragment() {
     ): View? {
         _binding = FragmentTaskListBinding.inflate(inflater, container, false)
         val rootView = binding.root
-        // val rootView = inflater.inflate(R.layout.fragment_task_list, container,false)
         return rootView
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        // on utilise `requireView()` pour éviter les erreurs de `null`
         val recyclerView = binding.taskList
         recyclerView.adapter = adapter
         val addButton = binding.addTaskButton
-        val userIcone = binding.userIcone
         val intent = Intent(context, DetailActivity::class.java)
 
         addButton.setOnClickListener {
             createTask.launch(intent)
         }
 
-        userIcone.setOnClickListener{
-            startActivity(Intent(context, UserActivity::class.java))
-        }
-
-
-
-        lifecycleScope.launch { // on lance une coroutine car `collect` est `suspend`
+        lifecycleScope.launch {
             viewModel.tasksStateFlow.collect { newList ->
-                // cette lambda est exécutée à chaque fois que la liste est mise à jour dans le VM
-                // -> ici, on met à jour la liste dans l'adapter
                 adapter.submitList(newList)
             }
         }
@@ -107,7 +97,8 @@ class TaskListFragment : Fragment() {
     override fun onResume() {
         super.onResume()
         viewModel.refresh()
-        // Ici on ne va pas gérer les cas d'erreur donc on force le crash avec "!!"
+        val intent2 = Intent(context, UserActivity::class.java)
+        // Here we will not handle error cases so we force the crash with "!!"
         lifecycleScope.launch {
             val user = Api.userWebService.fetchUser().body()
             Log.e("User", user?.name.toString())
@@ -115,6 +106,12 @@ class TaskListFragment : Fragment() {
             binding.userIcone.load(user?.avatar) {
                 error(R.drawable.ic_launcher_background)
             }
+            intent2.putExtra(NAME_KEY, user?.name.toString())
+        }
+
+
+        binding.userIcone.setOnClickListener {
+            startActivity(intent2)
         }
     }
 }

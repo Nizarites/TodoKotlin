@@ -14,20 +14,20 @@ class TaskListViewModel : ViewModel() {
 
     fun refresh() {
         viewModelScope.launch {
-            val response = webService.fetchTasks() // Call HTTP (opération longue)
-            if (!response.isSuccessful) { // à cette ligne, on a reçu la réponse de l'API
+            val response = webService.fetchTasks() // Call HTTP
+            if (!response.isSuccessful) {
                 Log.e("Network", "Error: ${response.message()}")
                 return@launch
             }
             val fetchedTasks = response.body()!!
-            tasksStateFlow.value = fetchedTasks // on modifie le flow, ce qui déclenche ses observers
+            tasksStateFlow.value =
+                fetchedTasks
         }
     }
 
-    // à compléter plus tard:
     fun add(task: Task) {
         viewModelScope.launch {
-            val response = webService.create(task) // Complete the network call
+            val response = webService.create(task)
             if (!response.isSuccessful) {
                 Log.e("Network", "Error: ${response.raw()}")
                 return@launch
@@ -38,9 +38,10 @@ class TaskListViewModel : ViewModel() {
             tasksStateFlow.value = updatedList
         }
     }
+
     fun edit(task: Task) {
         viewModelScope.launch {
-            val response = webService.update(task) // Complete the network call
+            val response = webService.update(task)
             if (!response.isSuccessful) {
                 Log.e("Network", "Error: ${response.raw()}")
                 return@launch
@@ -52,9 +53,10 @@ class TaskListViewModel : ViewModel() {
             tasksStateFlow.value = updatedList
         }
     }
+
     fun remove(task: Task) {
         viewModelScope.launch {
-            val response = webService.delete(id=task.id)
+            val response = webService.delete(id = task.id)
             if (!response.isSuccessful) {
                 Log.e("Network", "Error: ${response.raw()}")
                 return@launch

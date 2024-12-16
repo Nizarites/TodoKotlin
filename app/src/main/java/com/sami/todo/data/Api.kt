@@ -9,10 +9,10 @@ import retrofit2.Retrofit
 
 object Api {
     private const val TOKEN = "c63ea4bd05179aafff65b5a5146f551940738f92"
-    val userWebService : UserWebService by lazy {
+    val userWebService: UserWebService by lazy {
         retrofit.create(UserWebService::class.java)
     }
-    val tasksWebService : TasksWebService by lazy {
+    val tasksWebService: TasksWebService by lazy {
         retrofit.create(TasksWebService::class.java)
     }
 
@@ -34,6 +34,7 @@ object Api {
         val jsonSerializer = Json {
             ignoreUnknownKeys = true
             coerceInputValues = true
+            encodeDefaults = true
         }
 
         // instance retrofit pour implémenter les webServices:
