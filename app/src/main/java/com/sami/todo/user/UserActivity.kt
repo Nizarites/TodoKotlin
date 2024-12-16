@@ -22,6 +22,8 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -37,12 +39,14 @@ import coil3.load
 import coil3.request.error
 import com.sami.todo.R
 import com.sami.todo.data.Api
+import com.sami.todo.list.Task
 import com.sami.todo.user.ui.UserViewModel
 import com.sami.todo.user.ui.theme.TodoSamiTheme
 import kotlinx.coroutines.launch
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
+import java.util.UUID
 
 class UserActivity : ComponentActivity() {
 
@@ -76,6 +80,9 @@ class UserActivity : ComponentActivity() {
                     Log.e("UserActivity", "Permission denied")
                 }
             }
+
+            //TODO : add a way to change the name
+
             Column {
                 AsyncImage(
                     modifier = Modifier.fillMaxHeight(.2f),
@@ -93,6 +100,16 @@ class UserActivity : ComponentActivity() {
                         oldAndroid.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
                     },
                     content = { Text("Pick photo") }
+                )
+                OutlinedTextField(
+                    value = "", //TODO put the name of the user
+                    onValueChange = {}, // TODO --> is the button necessary ?
+                    label = { Text("Name") }
+                )
+                Button(
+                    onClick = { //TODO : valid the modification of the name
+                    },
+                    content = { Text("Change name") }
                 )
             }
         }

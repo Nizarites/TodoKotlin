@@ -18,6 +18,6 @@ interface UserWebService {
     @POST("sync/v9/update_avatar")
     suspend fun updateAvatar(@Part avatar: MultipartBody.Part): Response<User>
 
-    //@PATCH("sync/v9/sync")
-    //suspend fun update(@Body commands: List<Commands>): Response<Unit>
+    @PATCH("sync/v9/sync")
+    suspend fun update(@Body commands: List<Commands>): Response<Unit>
 }
