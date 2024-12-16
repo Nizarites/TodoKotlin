@@ -116,6 +116,5 @@ class TaskListFragment : Fragment() {
                 error(R.drawable.ic_launcher_background)
             }
         }
-error()
     }
 }

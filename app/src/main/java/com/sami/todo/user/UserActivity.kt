@@ -1,12 +1,16 @@
 package com.sami.todo.user
 
+import android.content.Context
 import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.activity.compose.ManagedActivityResultLauncher
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.activity.result.PickVisualMediaRequest
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.compose.foundation.layout.Column
@@ -25,6 +29,9 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import coil3.compose.AsyncImage
+import coil3.load
+import coil3.request.error
+import com.sami.todo.R
 import com.sami.todo.data.Api
 import com.sami.todo.user.ui.theme.TodoSamiTheme
 import kotlinx.coroutines.launch
@@ -47,6 +54,13 @@ class UserActivity : ComponentActivity() {
                     bitmap?.toRequestBody()?.let { it1 -> Api.userWebService.updateAvatar(it1) }
                 }
             }
+            val pickPhoto = rememberLauncherForActivityResult(ActivityResultContracts.PickVisualMedia()) {
+                uri = it
+
+                composeScope.launch{
+                    uri?.toRequestBody(this@UserActivity)?.let { it1 -> Api.userWebService.updateAvatar(it1) }
+                }
+            }
             Column {
                 AsyncImage(
                     modifier = Modifier.fillMaxHeight(.2f),
@@ -60,7 +74,9 @@ class UserActivity : ComponentActivity() {
                     content = { Text("Take picture") }
                 )
                 Button(
-                    onClick = {},
+                    onClick = {
+                        pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                    },
                     content = { Text("Pick photo") }
                 )
             }
@@ -93,5 +109,15 @@ private fun Bitmap.toRequestBody(): MultipartBody.Part {
         name = "avatar",
         filename = "avatar.jpg",
         body = tmpFile.readBytes().toRequestBody()
+    )
+}
+
+private fun Uri.toRequestBody(context : Context): MultipartBody.Part {
+    val fileInputStream = context.contentResolver.openInputStream(this)!!
+    val fileBody = fileInputStream.readBytes().toRequestBody()
+    return MultipartBody.Part.createFormData(
+        name = "avatar",
+        filename = "avatar.jpg",
+        body = fileBody
     )
 }
