@@ -61,6 +61,14 @@ class UserActivity : ComponentActivity() {
                     uri?.toRequestBody(this@UserActivity)?.let { it1 -> Api.userWebService.updateAvatar(it1) }
                 }
             }
+            val oldAndroid = rememberLauncherForActivityResult(ActivityResultContracts.RequestPermission())
+            {
+                if (it) {
+                    pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                } else {
+                    Log.e("UserActivity", "Permission denied")
+                }
+            }
             Column {
                 AsyncImage(
                     modifier = Modifier.fillMaxHeight(.2f),
@@ -75,7 +83,7 @@ class UserActivity : ComponentActivity() {
                 )
                 Button(
                     onClick = {
-                        pickPhoto.launch(PickVisualMediaRequest(ActivityResultContracts.PickVisualMedia.ImageOnly))
+                        oldAndroid.launch(android.Manifest.permission.READ_EXTERNAL_STORAGE)
                     },
                     content = { Text("Pick photo") }
                 )
