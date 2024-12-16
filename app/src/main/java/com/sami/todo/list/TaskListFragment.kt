@@ -7,11 +7,14 @@ import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import coil3.load
+import coil3.request.error
+import com.sami.todo.R
 import com.sami.todo.data.Api
 import com.sami.todo.data.TaskListViewModel
 import com.sami.todo.databinding.FragmentTaskListBinding
@@ -64,7 +67,6 @@ class TaskListFragment : Fragment() {
         _binding = FragmentTaskListBinding.inflate(inflater, container, false)
         val rootView = binding.root
         // val rootView = inflater.inflate(R.layout.fragment_task_list, container,false)
-        viewModel.refresh()
         return rootView
     }
 
@@ -107,11 +109,13 @@ class TaskListFragment : Fragment() {
         viewModel.refresh()
         // Ici on ne va pas gérer les cas d'erreur donc on force le crash avec "!!"
         lifecycleScope.launch {
-            val user = Api.userWebService.fetchUser().body()!!
-            Log.d("User", user.name)
-            binding.userTextView.text = user.name
-            binding.userIcone.load(user.avatar)
+            val user = Api.userWebService.fetchUser().body()
+            Log.e("User", user?.name.toString())
+            binding.userTextView.text = user?.name
+            binding.userIcone.load(user?.avatar) {
+                error(R.drawable.ic_launcher_background)
+            }
         }
+error()
     }
-
 }
